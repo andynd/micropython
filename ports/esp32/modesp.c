@@ -135,7 +135,11 @@ STATIC mp_obj_t mp_esp_ota_set_boot_partition (mp_obj_t partition_ptr_in) {
     mp_get_buffer_raise(partition_ptr_in, &bufinfo, MP_BUFFER_READ);
     esp_partition_t* partition_ptr = NULL;
     memcpy(&partition_ptr, bufinfo.buf, bufinfo.len);
-    return mp_obj_new_int(esp_ota_set_boot_partition(partition_ptr));
+    esp_err_t res = esp_ota_set_boot_partition(partition_ptr);
+    if (res != ESP_OK) {
+        mp_raise_OSError(MP_EIO);
+    }
+    return mp_const_none;
 }
 STATIC MP_DEFINE_CONST_FUN_OBJ_1(esp_ota_set_boot_partition_obj, mp_esp_ota_set_boot_partition);
 
